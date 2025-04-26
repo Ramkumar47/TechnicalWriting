@@ -1,0 +1,127 @@
+\documentclass{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+% \usepackage{bm}
+% \usepackage{setspace}
+
+\renewcommand{\baselinestretch}{1.75}
+
+\newcommand{\diag}[1]{diag({#1})}
+\newcommand{\reshape}[2]{reshape \left({#1},\ {#2}\right)}
+\newcommand{\bm}[1]{\textbf{#1}}
+\newcommand{\der}[2]{\frac{\partial #1}{\partial #2}}
+
+% \renewcommand{\algorithmiccomment}[1]{// #1}
+
+\title{Recurrent Neural Network Algorithms}
+\author{Ramkumar}
+
+\begin{document}
+\maketitle
+
+\begin{algorithm}
+    \renewcommand{\thealgorithm}{}
+    \caption{RNN training}\label{alg:cap}
+    \begin{algorithmic}
+        \State load dataset $\{x_t,y_t\}, \ t=1,2,\dots,T$
+        \State Perform encoding on $\{x_t\}$ \Comment{word embedding}
+        \State Choose $N^{(1)}$ \Comment{hidden neurons count}
+        \State initialize $a_0=\{0\}$, $\frac{\partial a_0}{\partial W} = \{0\}$\Comment{initializing 0\textsuperscript{th} hidden vector/tensor values}
+        \State initialize $\frac{\partial a_0}{\partial U}=\{0\}$, $\frac{\partial a_0}{\partial b} = \{0\}$
+        \State randomly initialize $W$,$U$,$b$,$V$ and $c$ \Comment{initializing model parameters}
+        % \While{Not Converged}
+        \Repeat
+        % \State Perform Forward Propagation Procedure
+        % \State Perform Back Propagation Through Time Procedure
+        % \State Perform Parameter Update Procedure
+        %
+        \State Call \Call{Forward Propagation }{ }
+        \State Call \Call{BPTT }{ }
+        \State Call \Call{Parameter Update }{ }
+        \Until{Convergence}
+        % \Procedure{Forward Propagation}{}
+        % \For{$t = 1,2,\ldots,T$}
+        % \State $z_t = W a_{t-1} + U x_t + b$ \Comment{recurrent layer equations}
+        % \State $a_t = h(z_t)$
+        % \State $o_t = V a_t + c$\Comment{output layer equations}
+        % \State $\hat{y}_t = softmax(o_t)$
+        % \EndFor
+        % \State Perform decoding on $\{\hat{y}_t\}$ \Comment{For validation}
+        % \EndProcedure
+        % \Procedure{Back Propagation Through Time}{}
+        % \For{$t = 1,2,\ldots,T$}
+        % \State Compute the following in the order
+        % \begin{align*}
+        %     \delta_t^{(2)} &= \diag{\hat{\bm{y}}_t - \bm{y}_t} \\
+        %     \der{L_t}{\bm{c}} &= \delta_t^{(2)} \\
+        %     \der{\bm{o}_t}{V} &= \reshape{\bm{a}_t^T\otimes \bm{I}_{N^{(2)}}}{N^{(2)}\times N^{(2)}\times N^{(1)}}\\
+        %     \der{L_t}{V} &= \reshape{\delta_t^{(2)} \ \reshape{\der{\bm{o}_t}{\bm{V}}}{N^{(2)}\times\left(N^{(2)}*N^{(1)}\right)}}{N^{(2)}\times N^{(2)}\times N^{(1)}}\\
+        %     \der{L_t}{\bm{a}_t} &= \delta_t^{(2)} \bm{V} \\
+        %     \delta_t^{(1)} &= \der{L_t}{\bm{a}_t} \ \diag{h'(\bm{z}_t)} \\
+        %     \der{L_t}{\bm{b}} &= \delta_t^{(1)} \left[\bm{I}_{N^{(1)}} + \bm{W} \der{\bm{a}_{t-1}}{\bm{b}}\right]\\
+        %     \der{\bm{a}_t}{\bm{b}} &= \diag{h'(\bm{z}_t)} \\
+        %     \der{\bm{W}\bm{a}_{t-1}}{\bm{W}} &= \reshape{\bm{a}_{t-1}^T \otimes \bm{I}_{N^{(1)}}}{N^{(1)}\times N^{(1)} \times N^{(1)}} \\
+        %     \bm{W}\der{\bm{a}_{t-1}}{\bm{W}} &= \reshape{\bm{W} \ \reshape{\der{\bm{a}_{t-1}}{\bm{W}}}{N^{(1)}\times \left(N^{(1)}*N^{(1)}\right)}}{N^{(1)}\times N^{(1)}\times N^{(1)}} \\
+        %     \omega_1 &= \der{\bm{W}\bm{a}_{t-1}}{\bm{W}}+\bm{W}\der{\bm{a}_{t-1}}{\bm{W}} \\
+        %     \der{L_t}{\bm{W}} &= \reshape{\delta_t^{(1)} \ \reshape{\omega_1}{N^{(1)}\times \left(N^{(1)}*N^{(1)}\right)}}{N^{(2)}\times N^{(1)}\times N^{(1)}}\\
+        %     \der{\bm{a}_t}{\bm{W}} &= \diag{h'\left(\bm{z}_t\right)} \omega_1 \\
+        % \end{align*}
+        % \EndFor
+        % \EndProcedure
+        % \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+%     \renewcommand{\thealgorithm}{}
+    \begin{algorithmic}
+        % \Procedure{Forward Propagation}{}
+        % \For{$t = 1,2,\ldots,T$}
+        % \State $z_t = W a_{t-1} + U x_t + b$ \Comment{recurrent layer equations}
+        % \State $a_t = h(z_t)$
+        % \State $o_t = V a_t + c$\Comment{output layer equations}
+        % \State $\hat{y}_t = softmax(o_t)$
+        % \EndFor
+        % \State Perform decoding on $\{\hat{y}_t\}$ \Comment{For validation}
+        % \EndProcedure
+        \Function{Forward Propagation }{ }
+        \For{$t = 1,2,\ldots,T$}
+        \State $z_t = W a_{t-1} + U x_t + b$ \Comment{recurrent layer equations}
+        \State $a_t = h(z_t)$
+        \State $o_t = V a_t + c$\Comment{output layer equations}
+        \State $\hat{y}_t = softmax(o_t)$
+        \EndFor
+        \State Perform decoding on $\{\hat{y}_t\}$ \Comment{For validation}
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \renewcommand{\thealgorithm}{}
+    \begin{algorithmic}
+        \Procedure{Back Propagation Through Time}{}
+        \For{$t = 1,2,\ldots,T$}
+        \State Compute the following in the order
+        \begin{align*}
+            \delta_t^{(2)} &= \diag{\hat{\bm{y}}_t - \bm{y}_t} \\
+            \der{L_t}{\bm{c}} &= \delta_t^{(2)} \\
+            \der{\bm{o}_t}{V} &= \reshape{\bm{a}_t^T\otimes \bm{I}_{N^{(2)}}}{N^{(2)}\times N^{(2)}\times N^{(1)}}\\
+            \der{L_t}{V} &= \reshape{\delta_t^{(2)} \ \reshape{\der{\bm{o}_t}{\bm{V}}}{N^{(2)}\times\left(N^{(2)}*N^{(1)}\right)}}{N^{(2)}\times N^{(2)}\times N^{(1)}}\\
+            \der{L_t}{\bm{a}_t} &= \delta_t^{(2)} \bm{V} \\
+            \delta_t^{(1)} &= \der{L_t}{\bm{a}_t} \ \diag{h'(\bm{z}_t)} \\
+            \der{L_t}{\bm{b}} &= \delta_t^{(1)} \left[\bm{I}_{N^{(1)}} + \bm{W} \der{\bm{a}_{t-1}}{\bm{b}}\right]\\
+            \der{\bm{a}_t}{\bm{b}} &= \diag{h'(\bm{z}_t)} \\
+            \der{\bm{W}\bm{a}_{t-1}}{\bm{W}} &= \reshape{\bm{a}_{t-1}^T \otimes \bm{I}_{N^{(1)}}}{N^{(1)}\times N^{(1)} \times N^{(1)}} \\
+            \bm{W}\der{\bm{a}_{t-1}}{\bm{W}} &= \reshape{\bm{W} \ \reshape{\der{\bm{a}_{t-1}}{\bm{W}}}{N^{(1)}\times \left(N^{(1)}*N^{(1)}\right)}}{N^{(1)}\times N^{(1)}\times N^{(1)}} \\
+            \omega_1 &= \der{\bm{W}\bm{a}_{t-1}}{\bm{W}}+\bm{W}\der{\bm{a}_{t-1}}{\bm{W}} \\
+            \der{L_t}{\bm{W}} &= \reshape{\delta_t^{(1)} \ \reshape{\omega_1}{N^{(1)}\times \left(N^{(1)}*N^{(1)}\right)}}{N^{(2)}\times N^{(1)}\times N^{(1)}}\\
+            \der{\bm{a}_t}{\bm{W}} &= \diag{h'\left(\bm{z}_t\right)} \omega_1 \\
+        \end{align*}
+        \EndFor
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\end{document}

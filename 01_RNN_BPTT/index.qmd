@@ -1,0 +1,11 @@
+# Preface {.unnumbered}
+
+Here, I have derived the *back propagation through time* equations for the
+recurrent neural networks (RNN) as a part of my academics work. This derivation
+was made with an example RNN  that has 2 input, 3 hidden neurons and 2
+output.
+
+The derivation was then extended to a general RNN having $n$ input, $N^{(1)}$
+hidden neurons and $N^{(2)}$ output. I concluded by specifying the pseudocode
+for RNN computation with single data having $T$ subsamples, which is easy
+to extend for a dataset having multiple datapoints of different $T$ values.

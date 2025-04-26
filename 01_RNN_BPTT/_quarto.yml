@@ -1,0 +1,26 @@
+project:
+  type: book
+
+book:
+  title: "Back Propagation Through Time for Recurrent Neural Networks"
+  author: "Ramkumar"
+  date: today
+  chapters:
+    - index.qmd
+    - introduction.qmd
+    - forwardPropagation.qmd
+    - backPropagation.qmd
+    - weightUpdate.qmd
+    - summary.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    # theme: cosmo
+    theme: _extensions/cadojo/catppuccin/mocha.scss
+    # theme: _extensions/cadojo/catppuccin/macchiato.scss
+  pdf:
+    documentclass: scrreprt
+

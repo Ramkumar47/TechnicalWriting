@@ -1,0 +1,365 @@
+# Back Propagation Through Time
+
+Here, we will start from backwards, from last variable in output layer to
+first variable in input layer.
+
+We will start with derivative of $L_t$ with $\textbf{o}_t$. It is given as
+$$
+\frac{\partial L_t}{\partial \textbf{o}_t} = \hat{\textbf{y}}_t - \textbf{y}_t .
+$${#eq-lossVectorForm}
+
+The derivation of how @eq-lossVectorForm came is explained in an execellent
+way [here](https://medium.com/data-science/derivative-of-the-softmax-function-and-the-categorical-cross-entropy-loss-ffceefc081d1){target="blank"}.
+
+For dimensional compatiblity in later stages, I am going rewrite above
+vector equation in matrix form as
+
+$$
+\renewcommand{\diag}[1]{diag({#1})}
+\frac{\partial L_t}{\partial \textbf{o}_t} = \delta_t^{(2)} =  \diag{\hat{\textbf{y}}_t - \textbf{y}_t} .
+$${#eq-delta2}
+
+The @eq-delta2 yield a loss gradient matrix $\delta_t^{(2)} = \partial
+L_t/\partial \textbf{o}_t$ of size $N^{(2)}\times N^{(2)}$, which in our
+example network (@fig-RNN) will be a $2\times 2$ matrix as shown below.
+
+$$
+\delta_t^{(2)} =
+\begin{bmatrix}
+\hat{y}_{1,t} - y_{1,t} & 0 \\
+0 & \hat{y}_{2,t} - y_{2,t} \\
+\end{bmatrix}
+$$
+
+In all the below derivations, the explicit matrix/tensor forms will be writen
+with dimensions considering the example RNN network shown in @fig-RNN.
+
+## Computing loss gradients of layer 2 parameters
+
+Now, to compute loss gradient with respect to $\textbf{c}$ by taking
+@eq-layer2Vector
+
+$$
+\begin{align}
+\frac{\partial L_t}{\partial \textbf{c}} &= \frac{\partial L_t}{\partial \textbf{o}_t} \frac{\partial \textbf{o}_t}{\partial \textbf{c}} \\
+&= \delta_t^{(2)}
+\begin{bmatrix}
+\frac{\partial o_{1,t}}{\partial c_1} & \frac{\partial o_{1,t}}{\partial c_2} \\
+\frac{\partial o_{2,t}}{\partial c_1} & \frac{\partial o_{2,t}}{\partial c_2} \\
+\end{bmatrix}
+= \delta_t^{(2)} \textbf{I}_{N^{(2)}} = \delta_t^{(2)}
+\end{align}
+$${#eq-dLdc}
+
+It should be noted that in @eq-dLdc, the $\frac{\partial \textbf{o}_t}{\partial
+\textbf{c}}$ is a vector-to-vector gradient resulting in a matrix as shown in
+the above steps.
+
+
+:::{.callout-note}
+$\frac{\partial L_t}{\partial \textbf{c}}$ is a matrix of dimension
+$N^{(2)}\times N^{(2)}$, with 1^st^ dimension being number of components in the
+loss term.
+:::
+
+Then in similar way, computing loss gradient with respect to $\textbf{V}$
+by taking the same @eq-layer2Vector as
+
+$$
+\frac{\partial L_t}{\partial \textbf{V}} = \frac{\partial L_t}{\partial \textbf{o}_t} \frac{\partial \textbf{o}_t}{\partial \textbf{V}}
+$${#eq-dLdV1}
+
+In the above equation, we need to compute $\frac{\partial \textbf{o}_t}{\partial \textbf{V}}$ which is a vector-to-matrix gradient resulting in a 3D tensor as follows.
+
+$$
+\renewcommand{\reshape}[2]{reshape \left({#1},\ {#2}\right)}
+\begin{align}
+\frac{\partial \textbf{o}_t}{\partial \textbf{V}} &= \left[\left[\frac{\partial o_{1,t}}{\partial \textbf{V}}\right]\left[ \frac{\partial o_{2,t}}{\partial \textbf{V}}\right]\right] \\
+&= \left[
+\begin{bmatrix}
+a_{1,t} & a_{2,t} & a_{3,t} \\
+0 & 0 & 0
+\end{bmatrix}
+\begin{bmatrix}
+0 & 0 & 0 \\
+a_{1,t} & a_{2,t} & a_{3,t}
+\end{bmatrix}
+\right] \\
+&= \reshape{\textbf{a}_t^T \otimes \textbf{I}_{N^{(2)}}}{ N^{(2)}\times N^{(2)}\times  N^{(1)}}
+\end{align}
+$${#eq-dOdV}
+
+Substituting @eq-dOdV in @eq-dLdV1 will yield
+$$
+\frac{\partial L_t}{\partial \textbf{V}} = \delta_t^{(2)} \reshape{\textbf{a}_t^T \otimes \textbf{I}_{N^{(2)}}}{N^{(2)}\times N^{(2)}\times  N^{(1)}}.
+$$
+
+Here, $\otimes$ is the [Kronecker
+product](https://en.wikipedia.org/wiki/Kronecker_product){target="blank"} that
+gives $\textbf{a}_t^T \otimes \textbf{I}_{N^{(2)}}$ as a 2D matrix of
+$N^{(2)}\times(N^{(2)}*N^{(1)})$ dimension. And $\reshape{}{}$ is an tensor
+reshaping
+[operator](https://en.wikipedia.org/wiki/Tensor_reshaping){target="blank"}
+that transforms the 2D matrix of shape $N^{(2)}\times(N^{(2)}*N^{(1)})$ into
+a 3D Tensor of shape $N^{(2)}\times N^{(2)}\times N^{(1)}$.
+
+But, $\delta_t^{(2)}$ is a matrix of shape $N^{(2)}\times N^{(2)}$ and the
+other operand is a 3D tensor in the above equation. So, again
+$\reshape{}{}$ operation is performed to convert the tensor into matrix,
+perform multiplication and then again convert back the resulting matrix into
+tensor as shown below.
+
+$$
+\frac{\partial L_t}{\partial \textbf{V}} = \reshape{\delta_t^{(2)} \reshape{\frac{\partial \textbf{o}_t}{\partial \textbf{V}}}{N^{(2)}\times (N^{(2)}* N^{(1)})}}{ N^{(2)}\times N^{(2)}\times N^{(1)}}
+$${#eq-dLdV}
+
+:::{.callout-note}
+$\frac{\partial L_t}{\partial \textbf{V}}$ is a 3D tensor of dimension
+$N^{(2)}\times N^{(2)} \times N^{(1)}$, with 1^st^ dimension being number of
+components in the loss term.
+:::
+
+This concludes the gradients derivation for layer 2. Next, similar steps will
+be performed for gradeient computation for layer 1.
+
+<!-- ------------------------------------------------------------------------------- -->
+
+## Computing loss gradients of layer 1 parameters
+
+To start with layer 1 parameters, we need a couple of intermediate derivatives
+that are computed below.
+
+$$
+\begin{align}
+\frac{\partial L_t}{\partial \textbf{a}_t} &= \frac{\partial L_t}{\partial \textbf{o}_t} \frac{\partial \textbf{o}_t}{\partial \textbf{a}_t} \\
+&= \delta_t^{(2)}
+\begin{bmatrix}
+\frac{\partial o_{1,t}}{\partial a_{1,t}} & \frac{\partial o_{1,t}}{\partial a_{2,t}} & \frac{\partial o_{1,t}}{\partial a_{3,t}} \\
+\frac{\partial o_{2,t}}{\partial a_{1,t}} & \frac{\partial o_{2,t}}{\partial a_{2,t}} & \frac{\partial o_{2,t}}{\partial a_{3,t}} \\
+\end{bmatrix} \\
+&= \delta_t^{(2)}
+\begin{bmatrix}
+v_{1,1} & v_{1,2} & v_{1,3} \\
+v_{2,1} & v_{2,2} & v_{3,3} \\
+\end{bmatrix} \\
+&= \delta_T^{(2)} \textbf{V}
+\end{align}
+$${#eq-dLtda}
+
+And
+
+$$
+\begin{align}
+\frac{\partial L_t}{\partial \textbf{z}_t} &= \frac{\partial L_t}{\partial \textbf{a}_t} \frac{\partial \textbf{a}_t}{\partial \textbf{z}_t} \\
+&= \frac{\partial L_t}{\partial \textbf{a}_t}
+\begin{bmatrix}
+\frac{\partial a_{1,t}}{\partial z_{1,t}} & \frac{\partial a_{1,t}}{\partial z_{2,t}} & \frac{\partial a_{1,t}}{\partial z_{3,t}} \\
+\frac{\partial a_{2,t}}{\partial z_{1,t}} & \frac{\partial a_{2,t}}{\partial z_{2,t}} & \frac{\partial a_{2,t}}{\partial z_{3,t}} \\
+\frac{\partial a_{3,t}}{\partial z_{1,t}} & \frac{\partial a_{3,t}}{\partial z_{2,t}} & \frac{\partial a_{3,t}}{\partial z_{3,t}} \\
+\end{bmatrix} \\
+&= \frac{\partial L_t}{\partial \textbf{a}_t}
+\begin{bmatrix}
+h'(z_{1,t}) & 0 & 0 \\
+0 & h'(z_{1,t}) & 0 \\
+0 & 0 & h'(z_{1,t}) \\
+\end{bmatrix} \\
+&= \frac{\partial L_t}{\partial \textbf{a}_t} \diag{h'\left(\textbf{z}_t\right)} \\
+&= \delta_t^{(1)}
+\end{align}
+$${#eq-delta1}
+
+:::{.callout-note}
+$\delta_t^{(1)}$ is a matrix of size $N^{(2)}\times N^{(1)}$.
+:::
+
+Now, we will start with the $\textbf{b}$ parameter's loss gradient.
+
+$$
+\frac{\partial L_t}{\partial \textbf{b}} = \frac{\partial L_t}{\partial \textbf{z}_t} \frac{\partial \textbf{z}_t}{\partial \textbf{b}}
+$${#eq-dLdb1}
+
+It is evident from @eq-layer1Vector and @eq-layer1OutputVector that
+$\textbf{a}_t$ is dependent on $\textbf{z}_t$. However, $\textbf{z}_t$ is
+dependent upon $\textbf{a}_{t-1}$, and the chain goes on till $t=0$. Let me
+call this as *sequence chain link*. Because of this, the $\textbf{z}_t$ derivative
+in above equation will be written as
+$$
+\begin{align}
+\frac{\partial \textbf{z}_t}{\partial \textbf{b}} &= \frac{\partial \textbf{b}}{\partial \textbf{b}} + \textbf{W}\frac{\partial \textbf{a}_{t-1}}{\partial \textbf{b}} \\
+&= \textbf{I}_{N^{(1)}} + \textbf{W}\frac{\partial \textbf{a}_{t-1}}{\partial \textbf{b}} \\
+\end{align}
+$$
+
+We will keep $\partial\textbf{a}_{t-1}/\partial\textbf{b}$ as it is for now. Substituting
+above expression in @eq-dLdb1 gives
+
+$$
+\frac{\partial L_t}{\partial \textbf{b}} = \delta_t^{(1)} \left[\textbf{I}_{N^{(1)}} + \textbf{W}\frac{\partial \textbf{a}_{t-1}}{\partial \textbf{b}}\right]. \\
+$${#eq-dLdb}
+
+:::{.callout-note}
+$\frac{\partial L_t}{\partial \textbf{b}}$ is a vector of shape $N^{(2)}\times N^{(1)}$.
+:::
+
+Next, we compute
+$$
+\begin{align}
+\frac{\partial \textbf{a}_t}{\partial \textbf{b}} &= \frac{\partial \textbf{a}_t}{\partial \textbf{z}_t} \frac{\partial \textbf{z}_t}{\partial \textbf{b}} \\
+&= \diag{h'(\textbf{z}_t)} \textbf{I}_{N^{(1)}} \\
+&= \diag{h'(\textbf{z}_t)}
+\end{align}
+$${#eq-datdb}
+
+which is a $N^{(1)}\times N^{(1)}$ matrix.
+
+
+Now, we move to compute $\textbf{W}$ parameter's loss gradient. From @eq-layer1Vector,
+$$
+\renewcommand{\bm}[1]{\textbf{#1}}
+\renewcommand{\der}[2]{\frac{\partial #1}{\partial #2}}
+$$
+$$
+\begin{align}
+\der{L_t}{\bm{W}} &= \der{L_t}{\bm{z}_t}\der{\bm{z}_t}{\bm{W}} \\
+&= \delta_t^{(1)}\left[\der{\bm{W}\bm{a}_{t-1}}{\bm{W}} + \bm{W}\der{\bm{a}_{t-1}}{\bm{W}}\right] \\
+&= \delta_t^{(1)} \omega_1.
+\end{align}
+$${#eq-dLdW1}
+
+Lets compute each term in $\omega_1$ in above equation. Let
+$$
+\lambda = \bm{W} \bm{a}_{t-1} =
+\begin{bmatrix}
+w_{1,1} a_{1,t-1} + w_{1,2}a_{2,t-1} + w_{1,3} a_{3,t-1} \\
+w_{2,1} a_{1,t-1} + w_{2,2}a_{2,t-1} + w_{2,3} a_{3,t-1} \\
+w_{3,1} a_{1,t-1} + w_{3,2}a_{2,t-1} + w_{3,3} a_{3,t-1} \\
+\end{bmatrix}
+$$
+
+Now,
+$$
+\begin{align}
+\der{\bm{W}\bm{a}_{t-1}}{\bm{W}} = \der{\lambda}{\bm{W}} &=
+\left[\left[\der{\lambda_1}{\bm{W}}\right]\left[\der{\lambda_2}{\bm{W}}\right]\left[\der{\lambda_3}{\bm{W}}\right]\right] \\
+&= \left[
+\begin{bmatrix}
+a_{1,t-1} & a_{2,t-1} & a_{3,t-1} \\
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+0 & 0 & 0 \\
+a_{1,t-1} & a_{2,t-1} & a_{3,t-1} \\
+0 & 0 & 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+a_{1,t-1} & a_{2,t-1} & a_{3,t-1} \\
+\end{bmatrix}
+\right] \\
+\der{\bm{W}\bm{a}_{t-1}}{\bm{W}}&= \reshape{\bm{a}_{t-1}^T\otimes \bm{I}_{N^{(1)}}}{N^{(1)}\times N^{(1)}\times N^{(1)}} .
+\end{align}
+$${#eq-dWadW}
+
+We keep $\der{\bm{a}_{t-1}}{\bm{W}}$ as it is for now in @eq-dLdW1 like
+previously did. Then,
+
+$$
+\bm{W}\der{\bm{a}_{t-1}}{\bm{W}} = \reshape{\bm{W}\  \reshape{\der{\bm{a}_{t-1}}{\bm{W}}}{N^{(1)}\times (N^{(1)}* N^{(1)})}}{N^{(1)}\times N^{(1)}\times N^{(1)}}.
+$${#eq-WdadW}
+
+Substituting @eq-dWadW and @eq-WdadW in @eq-dLdW1 can compute $\omega_1$ term.
+Thus,
+$$
+\der{L_t}{\bm{W}} = \reshape{\delta_t^{(1)} \ \reshape{\omega_1}{N^{(1)}\times (N^{(1)}*N^{(1)})}}{N^{(2)}\times N^{(1)} \times N^{(1)}}.
+$${#eq-dLdW}
+
+
+:::{.callout-note}
+$\der{L_t}{\bm{W}}$ is a 3D tensor of shape $N^{(2)}\times N^{(1)} \times N^{(1)}$.
+:::
+
+Now, computing the last parameter $\bm{U}$ derivative of loss function
+
+$$
+\begin{align}
+\der{L_t}{\bm{U}} &= \der{L_t}{\bm{z}_t}\der{\bm{z}_t}{\bm{U}} \\
+&= \delta_t^{(1)} \left[\der{\bm{U}\bm{x}_t}{\bm{U}} + \bm{W} \der{\bm{a}_{t-1}}{\bm{U}}\right]\\
+&= \delta_t^{(2)} \omega_2.
+\end{align}
+$${#eq-dLdU1}
+
+Now to compute $\omega_2$ in above equation. Let
+$$
+\psi = \bm{U}\bm{x}_t =
+\begin{bmatrix}
+u_{1,1} x_{1,t} + u_{1,2} x_{2,t} \\
+u_{2,1} x_{1,t} + u_{2,2} x_{2,t} \\
+u_{3,1} x_{1,t} + u_{3,2} x_{2,t} \\
+\end{bmatrix}.
+$$
+
+Then
+
+$$
+\begin{align}
+\der{\bm{U}\bm{x}_t}{\bm{U}} = \der{\psi}{\bm{U}} &=
+\left[\left[\der{\psi_1}{\bm{U}}\right]\left[\der{\psi_2}{\bm{U}}\right]\left[\der{\psi_3}{\bm{U}}\right]\right] \\
+&= \left[
+\begin{bmatrix}
+x_{1,t} & x_{2,t} \\
+0 & 0 \\
+0 & 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+0 & 0 \\
+x_{1,t} & x_{2,t} \\
+0 & 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+0 & 0 \\
+0 & 0 \\
+x_{1,t} & x_{2,t} \\
+\end{bmatrix}
+\right] \\
+\der{\bm{U}\bm{x}_t}{\bm{U}} &= \reshape{\bm{x}_t^T \otimes \bm{I}_{N^{(1)}}}{N^{(1)}\times N^{(1)} \times n} .
+\end{align}
+$${#eq-dUxdU}
+
+Now, in the other term, we will keep $\der{\bm{a}_{t-1}}{\bm{U}}$ as it is for now
+like previously did. Then,
+$$
+\bm{W}\der{\bm{a}_{t-1}}{\bm{U}} = \reshape{\bm{W} \reshape{\der{\bm{a}_{t-1}}{\bm{U}}}{N^{(1)}\times (N^{(1)}*n)}}{N^{(1)}\times N^{(1)}\times n}
+$${#eq-WdadU}
+
+Now, by substituting @eq-dUxdU and @eq-WdadU in @eq-dLdU1, we can compute $\omega_2$.
+Thus,
+
+$$
+\der{L_t}{\bm{U}} = \reshape{\delta_t^{(1)} \reshape{\omega_2}{N^{(1)}\times (N^{(1)}*n)}}{N^{(2)}\times N^{(1)} \times n}
+$${#eq-dLdU}
+
+:::{.callout-note}
+$\der{L_t}{\bm{U}}$ is a 3D tensor of size $N^{(2)}\times N^{(1)} \times n$.
+:::
+This concludes the loss equation derivatives computation for all model parameters.
+
+<!-- ------------------------------------------------------------------------------- -->
+
+## Summary of loss gradients
+
+Below is the summary of the loss gradient equations for all parameters.
+
+$$
+\begin{align}
+\der{L_t}{\bm{c}} &= \delta_t^{(2)}\\
+\frac{\partial L_t}{\partial \textbf{V}} &= \reshape{\delta_t^{(2)} \ \reshape{\frac{\partial \textbf{o}_t}{\partial \textbf{V}}}{N^{(2)}\times (N^{(2)}* N^{(1)})}}{ N^{(2)}\times N^{(2)}\times N^{(1)}} \\
+\frac{\partial L_t}{\partial \textbf{b}} &= \delta_t^{(1)} \left[\textbf{I}_{N^{(1)}} + \textbf{W}\frac{\partial \textbf{a}_{t-1}}{\partial \textbf{b}}\right] \\
+\der{L_t}{\bm{W}} &= \reshape{\delta_t^{(1)} \ \reshape{\omega_1}{N^{(1)}\times (N^{(1)}*N^{(1)})}}{N^{(2)}\times N^{(1)} \times N^{(1)}} \\
+\der{L_t}{\bm{U}} &= \reshape{\delta_t^{(1)} \reshape{\omega_2}{N^{(1)}\times (N^{(1)}*n)}}{N^{(2)}\times N^{(1)} \times n}
+\end{align}
+$$
+
+In the next section, we will discuss about updating model parameters
+and the pseudocode for RNN training.

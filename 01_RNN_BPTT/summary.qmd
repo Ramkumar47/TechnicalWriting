@@ -1,0 +1,29 @@
+# Summary
+
+In this work, the back-propagation through time procedure and the appropriate
+loss gradient equations were derived for the Recurrent Neural Networks.
+
+- Here, the derivation was made with the example RNN that has 3 hidden neurons
+  and 2 as size of input/output vectors to confirm the dimensional consistency
+  between the vector/matrix/tensors in the equations.
+
+- The derived loss gradient equations are generalized for an RNN with $N^{(1)}$
+  hidden neurons, $n$ input vector size and $N^{(2)}$ output vector size. Here,
+  the RNN with only two layers is used for the development. But the procdure is
+  straightforward for extending it to deep RNNs.
+
+- Here, the derived loss gradients will have an extra dimension specified as
+  the first dimension in the matrix/tensor ($N^{(2)}$ in ($N^{(2)} \times
+  N^{(1)} \times n$ for example). This dimension is the dimension of the loss
+  vector called as loss axis. That is, there will be one gradient per loss
+  component for each parameter. Thus, summing along the loss axis will be
+  performed before updating the model parameters to get contribution from all
+  output vector components for the update.
+
+- And in the last section, the training algorithm for RNNs was given.
+
+This derivation was made as a part of the course work. Later, these equations
+and the training algorithm will be used to solve simple problems and
+the link to their documentations will be updated here soon.
+
+
