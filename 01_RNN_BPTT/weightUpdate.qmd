@@ -4,11 +4,6 @@ In the last section, we have derived the loss gradients for all model parameters
 It can be noted that the loss gradients have an extra dimension than its corresponding
 model parameters.
 
-$$
-\renewcommand{\bm}[1]{\textbf{#1}}
-\renewcommand{\der}[2]{\frac{\partial #1}{\partial #2}}
-$$
-
 For example, \
 the dimension of $\der{L_t}{\bm{U}}$ is $\left(N^{(2)}\times
 N^{(1)}\times n\right)$ whereas the dimension of $\bm{U}$ is
@@ -28,13 +23,13 @@ The parameters update equations are given below. The summation is performed on
 the loss axis direction.
 
 $$
-\begin{align}
+\begin{aligned}
 \bm{c}_i :&= \left. \bm{c}_i - \alpha \sum_{t=1}^{N^{(2)}} \sum_{k=1}^{N^{(2)}} \der{L_t}{\bm{c}}\right|_{k,i}, \ \ i=1,2,\dots,N^{(2)} \\
 \bm{V}_{i,j} :&= \left. \bm{V}_{i,j} - \alpha \sum_{t=1}^{N^{(2)}}\sum_{k=1}^{N^{(2)}} \der{L_t}{\bm{V}}\right|_{k,i,j}, \ \ i=1,2,\dots,N^{(2)}, \ \ j=1,2,\dots,N^{(1)} \\
 \bm{b}_i :&= \left. \bm{b}_i - \alpha \sum_{t=1}^{N^{(2)}}\sum_{k=1}^{N^{(2)}} \der{L_t}{\bm{b}}\right|_{k,i}, \ \ i=1,2,\dots,N^{(1)} \\
 \bm{W}_{i,j} :&= \left. \bm{W}_{i,j} - \alpha \sum_{t=1}^{N^{(2)}}\sum_{k=1}^{N^{(2)}} \der{L_t}{\bm{W}}\right|_{k,i,j}, \ \ i=1,2,\dots,N^{(1)}, \ \ j=1,2,\dots,N^{(1)} \\
 \bm{U}_{i,j} :&= \left. \bm{U}_{i,j} - \alpha \sum_{t=1}^{N^{(2)}}\sum_{k=1}^{N^{(2)}} \der{L_t}{\bm{U}}\right|_{k,i,j}, \ \ i=1,2,\dots,N^{(1)}, \ \ j=1,2,\dots,n \\
-\end{align}
+\end{aligned}
 $$
 
 Here, $\alpha$ is the learning rate.
@@ -78,10 +73,12 @@ convergence criteria will be to set a threshold on loss value and the model is
 taken as converged/trained when loss goes below threshold.
 
 The algorithm for RNN training is given below (click on the image for enlarged view).
+
 ![](supportingFiles/algorithms/RNNtraining.png){.lightbox}
 
 Each main step in the above algorithm is defined as a function. The forward
 propagation function is given below.
+
 ![](supportingFiles/algorithms/ForwardPropagation.png){.lightbox}
 
 Here, the decoding step in the end of forward propagation is optional and
@@ -89,6 +86,7 @@ will be used only during model inference. Hence, that step can be skipped.
 
 Then the control in algorithm then goes to back-propagation through time function
 which is defined below.
+
 ![](supportingFiles/algorithms/BPTT.png){.lightbox}
 
 Here, the loss parameter gradient equations are given in the order of
@@ -96,6 +94,7 @@ execution so that the dependency of variables is satisfied.
 
 Once back-propagation is done and the gradients are available, the control
 then moves to the parameter update function that is defined below.
+
 ![](supportingFiles/algorithms/ParameterUpdate.png){.lightbox}
 
 And then, the loop continues until the convergence criteria is met. This

@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: 02fbaa0e-c463-4975-9a9d-5580df99ef5a
+      url: https://ramkumar47.quarto.pub/technicalwriting-bptt-rnn

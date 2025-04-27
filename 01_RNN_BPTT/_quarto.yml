@@ -12,15 +12,22 @@ book:
     - backPropagation.qmd
     - weightUpdate.qmd
     - summary.qmd
-    - references.qmd
+    #- references.qmd
 
-bibliography: references.bib
+# bibliography: references.bib
 
 format:
   html:
-    # theme: cosmo
-    theme: _extensions/cadojo/catppuccin/mocha.scss
+    theme:
+      light: flatly
+      dark: _extensions/cadojo/catppuccin/mocha.scss
+    include-in-header:
+      file: macros_html.qmd
+    # theme: _extensions/cadojo/catppuccin/mocha.scss
     # theme: _extensions/cadojo/catppuccin/macchiato.scss
   pdf:
     documentclass: scrreprt
+    pdf-engine: pdflatex
+    include-in-header:
+      file: macros.qmd
 

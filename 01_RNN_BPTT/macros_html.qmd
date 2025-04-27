@@ -1,0 +1,7 @@
+
+$$
+\newcommand{\diag}[1]{diag({#1})}
+\newcommand{\reshape}[2]{reshape \left({#1},\ {#2}\right)}
+\newcommand{\bm}[1]{\textbf{#1}}
+\newcommand{\der}[2]{\frac{\partial #1}{\partial #2}}
+$$

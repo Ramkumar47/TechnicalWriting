@@ -18,12 +18,20 @@ size $n=2$.
 Let $\textbf{z}_t=[z_{1,t}, z_{2,t},z_{3,t}]^T$ be the pre-activation output
 vector. Then the forward propagation equations will be
 
+<!-- $$ -->
+<!-- \begin{align} -->
+<!-- z_{1,t} &= w_{1,1} a_{1,t-1} + w_{1,2} a_{2,t-1} + w_{1,3} a_{3,t-1} + u_{1,1} x_{1,t} + u_{1,2} x_{2,t} + b_1\\ -->
+<!-- z_{2,t} &= w_{2,1} a_{1,t-1} + w_{2,2} a_{2,t-1} + w_{2,3} a_{3,t-1} + u_{2,1} x_{1,t} + u_{2,2} x_{2,t} + b_2\\ -->
+<!-- z_{3,t} &= w_{3,1} a_{1,t-1} + w_{3,2} a_{2,t-1} + w_{3,3} a_{3,t-1} + u_{3,1} x_{1,t} + u_{3,2} x_{2,t} + b_3 -->
+<!-- \end{align} -->
+<!-- $${#eq-layer1Scalar} -->
+
 $$
-\begin{align}
+\begin{aligned}
 z_{1,t} &= w_{1,1} a_{1,t-1} + w_{1,2} a_{2,t-1} + w_{1,3} a_{3,t-1} + u_{1,1} x_{1,t} + u_{1,2} x_{2,t} + b_1\\
 z_{2,t} &= w_{2,1} a_{1,t-1} + w_{2,2} a_{2,t-1} + w_{2,3} a_{3,t-1} + u_{2,1} x_{1,t} + u_{2,2} x_{2,t} + b_2\\
-z_{3,t} &= w_{3,1} a_{1,t-1} + w_{3,2} a_{2,t-1} + w_{3,3} a_{3,t-1} + u_{3,1} x_{1,t} + u_{3,2} x_{2,t} + b_3\\
-\end{align}
+z_{3,t} &= w_{3,1} a_{1,t-1} + w_{3,2} a_{2,t-1} + w_{3,3} a_{3,t-1} + u_{3,1} x_{1,t} + u_{3,2} x_{2,t} + b_3
+\end{aligned}
 $${#eq-layer1Scalar}
 
 In vector form, it will be writen as
