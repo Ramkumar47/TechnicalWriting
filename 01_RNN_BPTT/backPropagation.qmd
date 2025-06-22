@@ -15,6 +15,7 @@ For dimensional compatiblity in later stages, I am going rewrite above
 vector equation in matrix form as
 
 $$
+\renewcommand{\diag}[1]{diag({#1})}
 \frac{\partial L_t}{\partial \textbf{o}_t} = \delta_t^{(2)} =  \diag{\hat{\textbf{y}}_t - \textbf{y}_t} .
 $${#eq-delta2}
 
@@ -71,6 +72,7 @@ $${#eq-dLdV1}
 In the above equation, we need to compute $\frac{\partial \textbf{o}_t}{\partial \textbf{V}}$ which is a vector-to-matrix gradient resulting in a 3D tensor as follows.
 
 $$
+\renewcommand{\reshape}[2]{reshape \left({#1},\ {#2}\right)}
 \begin{aligned}
 \frac{\partial \textbf{o}_t}{\partial \textbf{V}} &= \left[\left[\frac{\partial o_{1,t}}{\partial \textbf{V}}\right]\left[ \frac{\partial o_{2,t}}{\partial \textbf{V}}\right]\right] \\
 &= \left[
@@ -213,6 +215,10 @@ which is a $N^{(1)}\times N^{(1)}$ matrix.
 
 Now, we move to compute $\textbf{W}$ parameter's loss gradient. From @eq-layer1Vector,
 $$
+\renewcommand{\bm}[1]{\textbf{#1}}
+\renewcommand{\der}[2]{\frac{\partial #1}{\partial #2}}
+$$
+$$
 \begin{aligned}
 \der{L_t}{\bm{W}} &= \der{L_t}{\bm{z}_t}\der{\bm{z}_t}{\bm{W}} \\
 &= \delta_t^{(1)}\left[\der{\bm{W}\bm{a}_{t-1}}{\bm{W}} + \bm{W}\der{\bm{a}_{t-1}}{\bm{W}}\right] \\
@@ -273,6 +279,11 @@ $${#eq-dLdW}
 :::{.callout-note}
 $\der{L_t}{\bm{W}}$ is a 3D tensor of shape $N^{(2)}\times N^{(1)} \times N^{(1)}$.
 :::
+
+And computing the needed gradient for the next timestep
+$$
+\der{\bm{a}_t}{\bm{W}} = \diag{h'(\bm{z}_t)} \omega_1.
+$$
 
 Now, computing the last parameter $\bm{U}$ derivative of loss function
 
@@ -337,6 +348,12 @@ $${#eq-dLdU}
 :::{.callout-note}
 $\der{L_t}{\bm{U}}$ is a 3D tensor of size $N^{(2)}\times N^{(1)} \times n$.
 :::
+
+And computing the needed gradient for the next timestep
+$$
+\der{\bm{a}_t}{\bm{U}} = \diag{h'(\bm{z}_t)} \omega_2
+$$
+
 This concludes the loss equation derivatives computation for all model parameters.
 
 <!-- ------------------------------------------------------------------------------- -->

@@ -1,0 +1,42 @@
+/*-- scss:defaults --*/
+
+/* Catppuccin latte  */
+$Rosewatter: #dc8a78 !default;
+$Flamingo: #dd7878 !default;
+$Pink: #ea76cb !default;
+$Mauvre: #8839ef !default;
+$Red: #d20f39 !default;
+$Maroon: #e64553 !default;
+$Peach: #fe640b !default;
+$Yello: #df8e1d !default;
+$Green: #40a02b !default;
+$Teal: #179299 !default;
+$Sky: #04a5e5 !default;
+$Sapphire: #209fb5 !default;
+$Blue: #1e66f5 !default;
+$Lavender: #7287fd !default;
+$Text: #4c4f69 !default;
+$Subtext_1: #5c5f77 !default;
+$Subtext_0: #6c6f85 !default;
+$Overlay_2: #7c7f93 !default;
+$Overlay_1: #8c8fa1 !default;
+$Overlay_0: #9ca0b0 !default;
+$Surface_2: #acb0be !default;
+$Surface_1: #bcc0cc !default;
+$Surface_0: #ccd0da !default;
+$Base: #eff1f5 !default;
+$Mantle: #e6e9ef !default;
+$Crust: #dce0e8 !default;
+
+
+$body-bg: $Crust !default;
+$body-color: $Text !default;
+$link-color: $Blue !default;
+$input-bg: $Overlay_0 !default;
+$popover-bg: $Surface_0 !default;
+
+$code-annotation-higlight-color: $Maroon !default;
+$code-annotation-higlight-bg: $Peach !default;
+
+$navbar-bg: $Sapphire !default;
+$navbar-fg: $Mantle !default;

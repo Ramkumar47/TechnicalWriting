@@ -4,7 +4,7 @@ project:
 book:
   title: "Back Propagation Through Time for Recurrent Neural Networks"
   author: "Ramkumar"
-  date: today
+  date: 04-27-2025
   chapters:
     - index.qmd
     - introduction.qmd
@@ -19,12 +19,10 @@ book:
 format:
   html:
     theme:
-      light: flatly
-      dark: _extensions/cadojo/catppuccin/mocha.scss
+      light: [comso,_extensions/catppuccin_latte.scss]
+      dark: [comso,_extensions/catppuccin_mocha.scss]
     include-in-header:
       file: macros_html.qmd
-    # theme: _extensions/cadojo/catppuccin/mocha.scss
-    # theme: _extensions/cadojo/catppuccin/macchiato.scss
   pdf:
     documentclass: scrreprt
     pdf-engine: pdflatex

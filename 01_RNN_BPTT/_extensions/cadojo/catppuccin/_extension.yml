@@ -1,7 +1,0 @@
-title: Catppuccin
-author: Joey Carpinelli
-version: 1.0.0
-quarto-required: ">=1.4.0"
-contributes:
-  format:
-    html: default
